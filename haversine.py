@@ -4,8 +4,6 @@
 
 import os, re, sys, json, requests
 
-import clipboard
-
 from Spanners.Squirrel import Squirrel  # uses credstash, use your favourite password safe
 from Argumental.Argue import Argue # decorator for command line calling, ./haversine.py -h
 
@@ -130,6 +128,5 @@ if __name__ == '__main__':
 	#args.parse('delete 0EDDO'.split())
 	#args.parse('get 0YRNS'.split())
 	results = json.dumps(args.execute(), indent='\t')
-	#clipboard.set(results)
 	print(results)
 
