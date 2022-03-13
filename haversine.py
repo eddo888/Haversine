@@ -13,7 +13,7 @@ args = Argue()
 
 #________________________________________________________________________________________________
 @args.command(single=True)
-class Haversine(object):
+class Waypoints(object):
 	'''
 	wrapper around the most excellent REST API for waypoints by joao @ haversine
 	'''
@@ -71,21 +71,19 @@ class Haversine(object):
 		create or update a single waypoint
 		'''
 		if update:
-			url=f'{self.hostname}/webapi/waypoints/update'
+			url=f'{self.hostname}/webapi/waypoints/update/{id}'
 		else:
-			url=f'{self.hostname}/webapi/waypoints/new'
+			url=f'{self.hostname}/webapi/waypoints/new/{id}'
 		print(url)
 		
 		response = requests.post(
 			url, 
 			auth=(self.username, self.password), 
 			params=dict(
-				id=id,
 				description=description,
 				latitude=latitude,
 				longitude=longitude,
 				elevation=elevation,
-				type='CWP',
 			), 
 			verify=False
 		)
@@ -102,14 +100,11 @@ class Haversine(object):
 		''' 
 		delete a single waypoint by id
 		'''
-		url=f'{self.hostname}/webapi/waypoints/delete'
+		url=f'{self.hostname}/webapi/waypoints/delete/{id}'
 		response = requests.post(
 			url, 
 			auth=(self.username, self.password), 
-			params=dict(
-				id=id,
-				type='CWP',
-			), 
+			params=dict(),
 			verify=False
 		)
 		if response.status_code == 200:
@@ -118,15 +113,29 @@ class Haversine(object):
 		print(response, response.text)			
 		return False		
 		return
-		
+
+	#____________________________________________________________________________________________
+	@args.operation
+	def routes(self):
+		''' 
+		get routes, bit broken at the moment
+		'''
+		url=f'{self.hostname}/webapi/routes'
+		response = requests.get(url, auth=(self.username, self.password), verify=False)
+		if response.status_code == 200:
+			return response.text
+		print(response, response.text)			
+		return		
+				
 #________________________________________________________________________________________________
 if __name__ == '__main__': 
-	#args.parse('list'.split())
-	#args.parse('create -h'.split())
-	#args.parse('create 0EDDO "daveedson" 1.0 2.0'.split())
-	#args.parse('create -u 0EDDO "daveedson" 1.0 2.0'.split())
-	#args.parse('delete 0EDDO'.split())
-	#args.parse('get 0YRNS'.split())
+	#args.parse(['list'])
+	#args.parse(['create','-h'])
+	#args.parse(['create','0EDDO','daveedson','1.0','2.0'])
+	#args.parse(['create','-u','0EDDO',"dave edson",'2.0','3.0'])
+	#args.parse(['delete','0EDDO'])
+	#args.parse(['get','0EDDO'])
+	args.parse(['routes'])
 	results = json.dumps(args.execute(), indent='\t')
 	print(results)
 
