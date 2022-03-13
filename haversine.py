@@ -135,7 +135,7 @@ if __name__ == '__main__':
 	#args.parse(['create','-u','0EDDO',"dave edson",'2.0','3.0'])
 	#args.parse(['delete','0EDDO'])
 	#args.parse(['get','0EDDO'])
-	args.parse(['routes'])
+	#args.parse(['routes'])
 	results = json.dumps(args.execute(), indent='\t')
 	print(results)
 
