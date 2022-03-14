@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+# PYTHON_ARGCOMPLETE_OK
+
 # pip3 install boto credstash Spanners Argumental
 
 import os, re, sys, json, requests
@@ -12,8 +14,8 @@ args = Argue()
 
 
 #________________________________________________________________________________________________
-@args.command(single=True)
-class Waypoints(object):
+@args.command()
+class Haversine(object):
 	'''
 	wrapper around the most excellent REST API for waypoints by joao @ haversine
 	'''
@@ -27,7 +29,12 @@ class Waypoints(object):
 	@args.property(help='obtained from credstash, AWS dynamodb and crypto keys')
 	def password(self):
 		return squirrel.get(f'{self.username}@{self.hostname}')
-			
+
+
+#________________________________________________________________________________________________
+@args.command(name='waypoints')
+class Waypoints(Haversine):
+
 	#____________________________________________________________________________________________
 	@args.operation
 	def list(self):
@@ -64,7 +71,7 @@ class Waypoints(object):
 	@args.parameter(name='description', help='The point description, max 63 chars')
 	@args.parameter(name='latitude', type=float, help='y=DDD.DDDDDDD')
 	@args.parameter(name='longitude', type=float, help='x=DDD.DDDDDDD')
-	@args.parameter(name='elevation', type=float, help='EEEE.EEEE in feet', default=0.0)
+	@args.parameter(name='elevation', short='e', type=float, help='EEEE.EEEE in feet', default=0.0)
 	@args.parameter(name='update', flag=True, short='u', help='update instead of create')
 	def create(self, id, description, latitude, longitude, elevation=0.0, update=False):
 		'''
@@ -114,9 +121,14 @@ class Waypoints(object):
 		return False		
 		return
 
+	
+#________________________________________________________________________________________________
+@args.command(name='routes')
+class Routes(Haversine):
+
 	#____________________________________________________________________________________________
 	@args.operation
-	def routes(self):
+	def list(self):
 		''' 
 		get routes, bit broken at the moment
 		'''
@@ -126,16 +138,16 @@ class Waypoints(object):
 			return response.text
 		print(response, response.text)			
 		return		
-				
+
+	
 #________________________________________________________________________________________________
 if __name__ == '__main__': 
-	#args.parse(['list'])
-	#args.parse(['create','-h'])
-	#args.parse(['create','0EDDO','daveedson','1.0','2.0'])
-	#args.parse(['create','-u','0EDDO',"dave edson",'2.0','3.0'])
-	#args.parse(['delete','0EDDO'])
-	#args.parse(['get','0EDDO'])
-	#args.parse(['routes'])
-	results = json.dumps(args.execute(), indent='\t')
-	print(results)
+	#args.parse(['waypoints','list'])
+	#args.parse(['waypoints','create','-h'])
+	#args.parse(['waypoints','create','0EDDO','daveedson','1.0','2.0'])
+	#args.parse(['waypoints','create','-u','0EDDO',"dave edson",'2.0','3.0'])
+	#args.parse(['waypoints','delete','0EDDO'])
+	#args.parse(['waypoints','get','0EDDO'])
+	#args.parse(['routes','list'])
+	json.dump(args.execute(), sys.stdout, indent='\t')
 
