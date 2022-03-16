@@ -5,7 +5,7 @@ can be used from within python or from the unix command line (cygwin as well)
 
 # install
 
-pip3 install HaversineAPI
+pip3 install --upgrade HaversineAPI
 
 
 # help
@@ -156,50 +156,7 @@ this looks to be work in progress
 
 ```
 $ haversine.py routes list 
-/Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/site-packages/urllib3/connectionpool.py:1013: InsecureRequestWarning: Unverified HTTPS request is being made to host 'haversine.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
-  warnings.warn(
-<Response [404]> <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-	<head>
-		<meta http-equiv="content-type" content="text/html;charset=UTF-8" />
-		
-		<title>Haversine: Error 404</title>
-		
-		<link rel="stylesheet" type="text/css" href="/stylesheets/web.css">
-			<script type="text/javascript" src="/javascripts/haversine.js"></script>
-			</head>
-	<body> 
-		<div id="IPOCSSHeader" />
-		<div class="IPOCSSAreaContainer">
-			<a id="IPOCSSLogo" href="/"></a>
-		</div>
-		</div>
-		<div id="IPOCSSBody" >
-			<div class="IPOCSSAreaContainer">
-				<table width=900px; /><tr /><td />
-				<div id="IPOCSSError" />
-				<p />
-					The page you were looking for doesn't exist.<br>
-						You may have mistyped the address or the page may have moved.
-				</p>
-			</div>
-			</td></tr></table>
-		</div>
-		</div>
-		<div id="IPOCSSFooter">
-			<div id="IPOCSSFooterWrap" />
-			<div class="IPOCSSFooterContainer" />
-			
-		</div>
-		</div>
-		</div>
-		
-		
-		
-	</body>
-</html>
+...
 ```
 
 ## create
