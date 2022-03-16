@@ -42,17 +42,17 @@ class Waypoints(Haversine):
 		return the full list of waypoints in json format
 		'''
 		url = f'{self.hostname}/webapi/waypoints'
-		response = requests.get(url, auth=(self.username, self.password), verify=False)
+		response = requests.get(url, auth=(self.username, self.password), verify=True)
 		
 		waypoints = []
 		if response.status_code == 200:
 			#json.dump(response.json(), sys.stdout,  indent='\t')
-			waypoints = response.json()['waypoints']
-			#for waypoint in waypoints:
-			#	print(waypoint['id'], waypoint['description'])
-
+			return response.json()['waypoints']
+		else:
+			sys.stderr.write(f'{response}\n{response.text}\n')
 		return waypoints
 		
+
 	#____________________________________________________________________________________________
 	@args.operation
 	@args.parameter(name='id', help='The point ID, max 7 chars')
@@ -65,6 +65,7 @@ class Waypoints(Haversine):
 			return waypoints[id]
 		return
 		
+
 	#____________________________________________________________________________________________
 	@args.operation
 	@args.parameter(name='id', help='The point ID, max 7 chars')
@@ -81,7 +82,6 @@ class Waypoints(Haversine):
 			url=f'{self.hostname}/webapi/waypoints/update/{id}'
 		else:
 			url=f'{self.hostname}/webapi/waypoints/new/{id}'
-		print(url)
 		
 		response = requests.post(
 			url, 
@@ -92,13 +92,13 @@ class Waypoints(Haversine):
 				longitude=longitude,
 				elevation=elevation,
 			), 
-			verify=False
+			verify=True
 		)
 		if response.status_code == 200:
-			print(response.text)
-			return True
-		print(response, response.text)			
+			return response.json()['waypoint']
+		sys.stderr.write(f'{response}\n{response.text}\n')
 		return False
+
 
 	#____________________________________________________________________________________________
 	@args.operation
@@ -112,13 +112,11 @@ class Waypoints(Haversine):
 			url, 
 			auth=(self.username, self.password), 
 			params=dict(),
-			verify=False
+			verify=True
 		)
 		if response.status_code == 200:
-			print(response.text)
-			return True
-		print(response, response.text)			
-		return False		
+			return response.text
+		sys.stderr.write(f'{response}\n{response.text}\n')
 		return
 
 	
@@ -133,21 +131,52 @@ class Routes(Haversine):
 		get routes, bit broken at the moment
 		'''
 		url=f'{self.hostname}/webapi/routes'
-		response = requests.get(url, auth=(self.username, self.password), verify=False)
+		response = requests.get(url, auth=(self.username, self.password), verify=True)
 		if response.status_code == 200:
-			return response.text
-		print(response, response.text)			
+			return response.json()['routes']
+		sys.stderr.write(f'{response}\n{response.text}\n')
 		return		
+
+
+	#____________________________________________________________________________________________
+	@args.operation
+	@args.parameter(name='name', help='The route name to recover')
+	def get(self, name):
+		'''
+		get a single route by name, reads whole list and filters
+		'''
+		routes = dict(map(lambda x: (x['name'], x), self.list()))
+		if name in routes.keys():
+			return routes[name]
+		return
+		
+
+	#____________________________________________________________________________________________
+	@args.operation
+	@args.parameter(name='origin', help='ICAO of origin')
+	@args.parameter(name='destination', help='ICAO of destination')
+	def suggest(self, origin, destination):
+		'''
+		find a route from the origin to the destination
+		'''
+		url=f'{self.hostname}/webapi/routes/frequent'
+		
+		response = requests.get(
+			url, 
+			auth=(self.username, self.password), 
+			params=dict(
+				origin=origin,
+				destination=destination,
+			), 
+			verify=True
+		)
+		if response.status_code == 200:
+			return response.json()
+		sys.stderr.write(f'{response}\n{response.text}\n')
+		return
 
 	
 #________________________________________________________________________________________________
 if __name__ == '__main__': 
-	#args.parse(['waypoints','list'])
-	#args.parse(['waypoints','create','-h'])
-	#args.parse(['waypoints','create','0EDDO','daveedson','1.0','2.0'])
-	#args.parse(['waypoints','create','-u','0EDDO',"dave edson",'2.0','3.0'])
-	#args.parse(['waypoints','delete','0EDDO'])
-	#args.parse(['waypoints','get','0EDDO'])
-	#args.parse(['routes','list'])
 	json.dump(args.execute(), sys.stdout, indent='\t')
 
