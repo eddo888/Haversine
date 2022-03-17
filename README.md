@@ -33,29 +33,33 @@ ___
 # waypoints
 
 ```
-usage: haversine.py waypoints [-h] [--hostname HOSTNAME] [--password PASSWORD] [--username USERNAME]
-                              {create,delete,get,list} ...
+$ haversine.py waypoints -h
+
+usage: haversine.py waypoints [-h] [--hostname HOSTNAME] [--password PASSWORD]
+                              [--username USERNAME]
+                              {create,delete,get,list,update} ...
 
 positional arguments:
-  {create,delete,get,list}
+  {create,delete,get,list,update}
                         operations
-    create              create or update a single waypoint
+    create              create a single waypoint
     delete              delete a single waypoint by id
     get                 get a single waypoint by id, todo
     list                return the full list of waypoints in json format
+    update              update a single waypoint
 
 optional arguments:
   -h, --help            show this help message and exit
   --hostname HOSTNAME   default=https://haversine.com
   --password PASSWORD   obtained from credstash, AWS dynamodb and crypto keys
   --username USERNAME   default=eddo888
-
 ```
 
 ## create
 
 ```
 $ haversine.py waypoints create -h
+
 usage: haversine.py waypoints create [-h] [-e ELEVATION] [-u] id description latitude longitude
 
 create or update a single waypoint

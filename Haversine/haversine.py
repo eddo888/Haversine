@@ -212,6 +212,40 @@ class Routes(Haversine):
 		return
 
 	
+	#____________________________________________________________________________________________
+	@args.operation
+	@args.parameter(name='origin', help='ICAO of origin')
+	@args.parameter(name='destination', help='ICAO of destination')
+	@args.operation(name='points', nargs='*', help='waypoint ...')
+	def create(self, name, origin, destination, points=[]):
+		'''
+		create a new route
+		'''
+		pass #todo
+		
+				
+	#____________________________________________________________________________________________
+	@args.operation
+	@args.parameter(name='origin', help='ICAO of origin')
+	@args.parameter(name='destination', help='ICAO of destination')
+	@args.operation(name='points', nargs='*', help='waypoint ...')
+	def update(self, name, origin, destination, points=[]):
+		'''
+		update an existing route
+		'''
+		pass #todo
+			
+	
+	#____________________________________________________________________________________________
+	@args.operation
+	@args.parameter(name='origin', help='ICAO of origin')
+	def delete(self, name):
+		'''
+		delete an existing route
+		'''
+		pass #todo
+		
+
 #________________________________________________________________________________________________
 if __name__ == '__main__': 
 	json.dump(args.execute(), sys.stdout, indent='\t')
