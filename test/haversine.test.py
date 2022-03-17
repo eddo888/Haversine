@@ -2,8 +2,7 @@
 
 import os, re, sys, time, json, gc, logging, unittest
 
-if '..' not in sys.path:
-	sys.path.append("..") # Adds higher directory to python modules path.
+sys.path.insert(0, "..") # Adds higher directory to python modules path.
 	
 from datetime import datetime
 
@@ -13,8 +12,8 @@ class WaypointTest(unittest.TestCase):
 
 	def setUp(self):
 		self.waypoints = Waypoints()
-		self.waypoints.username = 'eddo888'
-		self.waypoints.password = open('.password').read()
+		#self.waypoints.username = 'eddo888'
+		#self.waypoints.password = open('.password').read()
 		
 		
 	def tearDown(self):
@@ -44,13 +43,14 @@ class WaypointTest(unittest.TestCase):
 
 		time.sleep(5)
 
-		waypoint = self.waypoints.create(id, 'David Edson', 1.0, 2,0)
+		waypoint = self.waypoints.create(id, 'David Edson', 1.0, 2.0)
 		print(waypoint)
 
 		assert waypoint['id'] == id
 		assert waypoint['description'] == 'David Edson'
 		assert waypoint['latitude'] == 1.0
 		assert waypoint['longitude'] == 2.0
+		assert waypoint['elevation'] == 0.0
 
 		waypoint = self.waypoints.get(id)
 		print(waypoint)
@@ -59,6 +59,32 @@ class WaypointTest(unittest.TestCase):
 		assert waypoint['description'] == 'David Edson'
 		assert waypoint['latitude'] == 1.0
 		assert waypoint['longitude'] == 2.0
+		assert waypoint['elevation'] == 0.0
+		
+		
+	def test_02_waypoint_update_and_get(self):
+		'''
+		update and get, presumes test 01 succeeded
+		'''
+		id = '0EDDO'
+		
+		waypoint = self.waypoints.update(id, 'Dave Edson', 2.0, 3.0, elevation=1.0)
+		print(waypoint)
+
+		assert waypoint['id'] == id
+		assert waypoint['description'] == 'Dave Edson'
+		assert waypoint['latitude'] == 2.0
+		assert waypoint['longitude'] == 3.0
+		assert waypoint['elevation'] == 1.0
+
+		waypoint = self.waypoints.get(id)
+		print(waypoint)
+
+		assert waypoint['id'] == id
+		assert waypoint['description'] == 'Dave Edson'
+		assert waypoint['latitude'] == 2.0
+		assert waypoint['longitude'] == 3.0
+		assert waypoint['elevation'] == 1.0
 		
 		
 	def _test_02_waypoint_create_and_get_using_args(self):

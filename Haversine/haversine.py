@@ -42,7 +42,11 @@ class Waypoints(Haversine):
 		return the full list of waypoints in json format
 		'''
 		url = f'{self.hostname}/webapi/waypoints'
-		response = requests.get(url, auth=(self.username, self.password), verify=True)
+		response = requests.get(
+			url, 
+			auth=(self.username, self.password), 
+			verify=False
+		)
 		
 		waypoints = []
 		if response.status_code == 200:
@@ -73,15 +77,11 @@ class Waypoints(Haversine):
 	@args.parameter(name='latitude', type=float, help='y=DDD.DDDDDDD')
 	@args.parameter(name='longitude', type=float, help='x=DDD.DDDDDDD')
 	@args.parameter(name='elevation', short='e', type=float, help='EEEE.EEEE in feet', default=0.0)
-	@args.parameter(name='update', flag=True, short='u', help='update instead of create')
-	def create(self, id, description, latitude, longitude, elevation=0.0, update=False):
+	def create(self, id, description, latitude, longitude, elevation=0.0):
 		'''
-		create or update a single waypoint
+		create a single waypoint
 		'''
-		if update:
-			url=f'{self.hostname}/webapi/waypoints/update/{id}'
-		else:
-			url=f'{self.hostname}/webapi/waypoints/new/{id}'
+		url=f'{self.hostname}/webapi/waypoints/new/{id}'
 		
 		response = requests.post(
 			url, 
@@ -92,12 +92,44 @@ class Waypoints(Haversine):
 				longitude=longitude,
 				elevation=elevation,
 			), 
-			verify=True
+			verify=False
 		)
 		if response.status_code == 200:
 			return response.json()['waypoint']
 		sys.stderr.write(f'{response}\n{response.text}\n')
 		return False
+
+
+	#____________________________________________________________________________________________
+	@args.operation
+	@args.parameter(name='id', help='The point ID, max 7 chars')
+	@args.parameter(name='description', help='The point description, max 63 chars')
+	@args.parameter(name='latitude', type=float, help='y=DDD.DDDDDDD')
+	@args.parameter(name='longitude', type=float, help='x=DDD.DDDDDDD')
+	@args.parameter(name='elevation', short='e', type=float, help='EEEE.EEEE in feet', default=0.0)
+	def update(self, id, description, latitude, longitude, elevation=0.0):
+		'''
+		update a single waypoint
+		'''
+		
+		url=f'{self.hostname}/webapi/waypoints/update/{id}'
+		
+		response = requests.post(
+			url, 
+			auth=(self.username, self.password), 
+			params=dict(
+				description=description,
+				latitude=latitude,
+				longitude=longitude,
+				elevation=elevation,
+			), 
+			verify=False
+		)
+		if response.status_code == 200:
+			return response.json()['waypoint']
+		sys.stderr.write(f'{response}\n{response.text}\n')
+		return False
+
 
 
 	#____________________________________________________________________________________________
@@ -112,7 +144,7 @@ class Waypoints(Haversine):
 			url, 
 			auth=(self.username, self.password), 
 			params=dict(),
-			verify=True
+			verify=False
 		)
 		if response.status_code == 200:
 			return response.text
@@ -131,7 +163,11 @@ class Routes(Haversine):
 		get routes, bit broken at the moment
 		'''
 		url=f'{self.hostname}/webapi/routes'
-		response = requests.get(url, auth=(self.username, self.password), verify=True)
+		response = requests.get(
+			url, 
+			auth=(self.username, self.password), 
+			verify=False
+		)
 		if response.status_code == 200:
 			return response.json()['routes']
 		sys.stderr.write(f'{response}\n{response.text}\n')
@@ -168,7 +204,7 @@ class Routes(Haversine):
 				origin=origin,
 				destination=destination,
 			), 
-			verify=True
+			verify=False
 		)
 		if response.status_code == 200:
 			return response.json()
