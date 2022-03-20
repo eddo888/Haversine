@@ -230,6 +230,27 @@ $ haversine routes sample
 }
 ```
 
+## suggest
+
+```
+$ haversine.py routes suggest -h
+
+usage: haversine.py routes suggest [-h] [-f] [-o OUTPUT] origin destination
+
+find a route from the origin to the destination
+
+positional arguments:
+  origin                ICAO of origin
+  destination           ICAO of destination
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -f, --first           take first suggestion and convert to importable route
+  -o OUTPUT, --output OUTPUT
+                        output to file name, null for stdout
+
+```
+
 ## create
 
 ```
