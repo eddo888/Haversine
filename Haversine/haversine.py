@@ -6,8 +6,10 @@
 
 import os, re, sys, json, requests
 
-from Spanners.Squirrel import Squirrel  # uses credstash, use your favourite password safe
-from Argumental.Argue import Argue # decorator for command line calling, ./haversine.py -h
+from dotmap import DotMap
+
+from Spanners.Squirrel import Squirrel  # uses credstash, use your favourite password safe instead if you like
+from Argumental.Argue import Argue # decorator for command line calling using argparse and argcomplete, cf $ ./haversine.py -h
 
 squirrel = Squirrel()
 args = Argue() 
@@ -18,6 +20,7 @@ args = Argue()
 class Haversine(object):
 	'''
 	wrapper around the most excellent REST API for waypoints by joao @ haversine
+	https://haversine.com/webapi
 	'''
 	
 	@args.property(default='https://haversine.com')
@@ -30,7 +33,13 @@ class Haversine(object):
 	def password(self):
 		return squirrel.get(f'{self.username}@{self.hostname}')
 
-
+	@args.property(flag=True, short='v', help='display verbose output')
+	def verbose(self): return
+	
+	@args.property(flag=True, short='i', help='use insecure mode for old clients with old cert trees, will remove later, developing on Pythonista')
+	def insecure(self): return
+	
+	
 #________________________________________________________________________________________________
 @args.command(name='waypoints')
 class Waypoints(Haversine):
@@ -41,20 +50,25 @@ class Waypoints(Haversine):
 		'''
 		return the full list of waypoints in json format
 		'''
+		
 		url = f'{self.hostname}/webapi/waypoints'
+		
+		if self.verbose:
+			sys.stdout.write(f'url={url}\n')
+			
 		response = requests.get(
 			url, 
 			auth=(self.username, self.password), 
-			verify=False
+			verify=not self.insecure
 		)
 		
-		waypoints = []
 		if response.status_code == 200:
-			#json.dump(response.json(), sys.stdout,  indent='\t')
+			if self.verbose:
+				json.dump(response.json(), sys.stdout,  indent='\t')
 			return response.json()['waypoints']
-		else:
-			sys.stderr.write(f'{response}\n{response.text}\n')
-		return waypoints
+		
+		sys.stderr.write(f'{response}\n{response.text}\n')
+		return
 		
 
 	#____________________________________________________________________________________________
@@ -64,9 +78,12 @@ class Waypoints(Haversine):
 		'''
 		get a single waypoint by id, todo
 		'''
+		
 		waypoints = dict(map(lambda x: (x['id'], x), self.list()))
+		
 		if id in waypoints.keys():
 			return waypoints[id]
+			
 		return
 		
 
@@ -81,21 +98,32 @@ class Waypoints(Haversine):
 		'''
 		create a single waypoint
 		'''
+		
+		request = dict(
+			description=description,
+			latitude=latitude,
+			longitude=longitude,
+			elevation=elevation,
+		)
+			
 		url=f'{self.hostname}/webapi/waypoints/new/{id}'
 		
+		if self.verbose:
+			sys.stdout.write(f'url={url}\nrequest=')
+			json.dump(request, sys.stdout, indent='\t')
+			
 		response = requests.post(
 			url, 
 			auth=(self.username, self.password), 
-			params=dict(
-				description=description,
-				latitude=latitude,
-				longitude=longitude,
-				elevation=elevation,
-			), 
-			verify=False
+			params=request, 
+			verify=not self.insecure
 		)
+		
 		if response.status_code == 200:
+			if self.verbose:
+				json.dump(response.json(), sys.stdout,  indent='\t')
 			return response.json()['waypoint']
+		
 		sys.stderr.write(f'{response}\n{response.text}\n')
 		return False
 
@@ -112,21 +140,31 @@ class Waypoints(Haversine):
 		update a single waypoint
 		'''
 		
+		request = dict(
+			description=description,
+			latitude=latitude,
+			longitude=longitude,
+			elevation=elevation,
+		)
+		
 		url=f'{self.hostname}/webapi/waypoints/update/{id}'
 		
+		if self.verbose:
+			sys.stdout.write(f'url={url}\nrequest=')
+			json.dump(request, sys.stdout, indent='\t')
+										
 		response = requests.post(
 			url, 
 			auth=(self.username, self.password), 
-			params=dict(
-				description=description,
-				latitude=latitude,
-				longitude=longitude,
-				elevation=elevation,
-			), 
-			verify=False
+			params=request, 
+			verify=not self.insecure
 		)
+		
 		if response.status_code == 200:
+			if self.verbose:
+				json.dump(response.json(), sys.stdout,  indent='\t')
 			return response.json()['waypoint']
+		
 		sys.stderr.write(f'{response}\n{response.text}\n')
 		return False
 
@@ -139,15 +177,24 @@ class Waypoints(Haversine):
 		''' 
 		delete a single waypoint by id
 		'''
+		
 		url=f'{self.hostname}/webapi/waypoints/delete/{id}'
+		
+		if self.verbose:
+			sys.stdout.write(f'url={url}\n')
+			
 		response = requests.post(
 			url, 
 			auth=(self.username, self.password), 
 			params=dict(),
-			verify=False
+			verify=not self.insecure
 		)
+		
 		if response.status_code == 200:
-			return response.text
+			if self.verbose:
+				json.dump(response.json(), sys.stdout,  indent='\t')
+			return response.json()
+		
 		sys.stderr.write(f'{response}\n{response.text}\n')
 		return
 
@@ -162,14 +209,23 @@ class Routes(Haversine):
 		''' 
 		get routes, bit broken at the moment
 		'''
+		
 		url=f'{self.hostname}/webapi/routes'
+		
+		if self.verbose:
+			sys.stdout.write(f'url={url}\n')
+			
 		response = requests.get(
 			url, 
 			auth=(self.username, self.password), 
-			verify=False
+			verify=not self.insecure
 		)
+		
 		if response.status_code == 200:
+			if self.verbose:
+				json.dump(response.json(), sys.stdout,  indent='\t')
 			return response.json()['routes']
+		
 		sys.stderr.write(f'{response}\n{response.text}\n')
 		return		
 
@@ -182,8 +238,10 @@ class Routes(Haversine):
 		get a single route by name, reads whole list and filters
 		'''
 		routes = dict(map(lambda x: (x['name'], x), self.list()))
+		
 		if name in routes.keys():
 			return routes[name]
+		
 		return
 		
 
@@ -191,44 +249,142 @@ class Routes(Haversine):
 	@args.operation
 	@args.parameter(name='origin', help='ICAO of origin')
 	@args.parameter(name='destination', help='ICAO of destination')
-	def suggest(self, origin, destination):
+	@args.parameter(name='first', short='f', flag=True, help='take first suggestion and convert to importable route')
+	@args.parameter(name='output', short='o', help='output to file name, null for stdout')
+	def suggest(self, origin, destination, first=None, output=None):
 		'''
 		find a route from the origin to the destination
 		'''
+		
+		request = dict(
+			origin=origin,
+			destination=destination,
+		)
+		
 		url=f'{self.hostname}/webapi/routes/frequent'
 		
+		if self.verbose:
+			sys.stdout.write(f'url={url}\nrequest=')
+			json.dump(request, sys.stdout, indent='\t')
+					
 		response = requests.get(
 			url, 
 			auth=(self.username, self.password), 
-			params=dict(
-				origin=origin,
-				destination=destination,
-			), 
-			verify=False
+			params=request, 
+			verify=not self.insecure
 		)
+		
 		if response.status_code == 200:
-			return response.json()
+			result = response.json()
+			
+			if self.verbose:
+				json.dump(result, sys.stdout,  indent='\t')
+				
+			if first:
+				result['path'] = result['paths'][0]['path']
+				del result['paths']
+				s = DotMap(result)
+				
+				result = {
+					'name': f'{s.origin}-{s.destination}',
+					'origin': s.origin,
+					'destination': s.destination,
+					'path' : s.path,			
+					'length': 0,						
+				}
+				
+			if output:
+				sys.stdout.write(f'output={output}\n')
+				with open(os.path.expanduser(output),'w') as _output:
+					json.dump(result, _output, indent='\t')
+													
+			return result
+
 		sys.stderr.write(f'{response}\n{response.text}\n')
 		return
 
 	
+	@args.operation
+	def sample(self):
+		'''
+		provide a sample route to be populated and used to create/update a route
+		'''
+		return {
+			#Field					Type			Description	
+			'name'					:'STRING (63)	A name for the route; it\'s unique key',
+			'origin'				:'STRING (7)	The name of the first waypoint; typically the airport\'s ICAO',
+			'departure_runway'		:'STRING (7)	May be NULL; otherwise the departire runway ID',
+			'sid'					:'STRING (15)	May be NULL or SID (departure) identifier',
+			'path'					:'STRING		May be NULL or empty, the sequence of points and airways along the route excluding procedures, runways and airports',
+			'destination'			:'STRING (7)	The destination waypoint ID, typically the airport\'s ICAO',
+			'star'					:'STRING (15)	May be NULL or STAR(arrival) identifier',
+			'approach'				:'STRING (15)	May be NULL or IAP (approach) identifier',
+			'arrival_runway'		:'STRING (7)	May be NULL; otherwise the arrival runway ID',
+			'length'				:'DOUBLE		The calculated route length, may be incorrect and/or not precise, ROM',
+			'flight_level'			:'INT			If specified (non NULL), the desired flight level in feet MSL, e.g. 35000 for FL350',
+			'climb_descent_tas'		:'INT			If specified (non NULL), the climb and descent speed in knots of true air speed (TAS)',
+			'vertical_speed_fpm'	:'INT			If specified (non NULL), the climb and descent vertical speed in feet per minute, e.g. 1800',
+			'points ' 				: [ #POINTs			A sequence of route points
+			{
+				#Field				Type			Description
+				'id'				:'STRING (7)	Point identifier',
+				'type'		:[
+					'one of the following;',
+					'APT = Airport',
+					'RW  = Runway',
+					'ILS = ILS or localizer',
+					'VOR = VOR navaid',
+					'NDB = Enroute or Terminal NDB',
+					'FIX = Enroute or Terminal Waypoint',
+					'LOC = Locality',
+					'CWP = Custom Waypoint',
+					'POS = Position, a set of coordinates',
+				],
+				'latitude'			:'DOUBLE		Latitude',
+				'longitude'			:'DOUBLE		Latitude',
+				'elevation'			:'DOUBLE		Elevation in feet MSL at which to cross or NULL (if unspecified)',
+			}]
+		}	
+
+
 	#____________________________________________________________________________________________
 	@args.operation
-	@args.parameter(name='origin', help='ICAO of origin')
-	@args.parameter(name='destination', help='ICAO of destination')
-	@args.operation(name='points', nargs='*', help='waypoint ...')
-	def create(self, name, origin, destination, points=[]):
+	@args.parameter(name='route', short='r', help='file with json route, or None for stdin')
+	def create(self, route=None):
 		'''
-		create a new route
+		create a new route, format as follows;
 		'''
-		pass #todo
+
+		input = sys.stdin
+		if route and os.path.exists(os.path.expanduser(route)): 
+			input = open(os.path.expanduser(route))
+		request = json.load(input)
+		if input != sys.stdin:
+			input.close()
+								
+		url=f'{self.hostname}/webapi/routes/new/{request["name"]}'
 		
+		if self.verbose:
+			sys.stdout.write(f'url={url}\nroute=')
+			json.dump(request, sys.stdout, indent='\t')
+			
+		response = requests.post(
+			url,
+			auth=(self.username, self.password),
+			json=request,
+			verify=not self.insecure,
+		)		
+		
+		if response.status_code == 200:
+			if self.verbose:
+				json.dump(response.json(), sys.stdout,  indent='\t')
+			return response.json()
+			
+		sys.stderr.write(f'{response}\n{response.text}\n')
+		return
 				
 	#____________________________________________________________________________________________
 	@args.operation
-	@args.parameter(name='origin', help='ICAO of origin')
-	@args.parameter(name='destination', help='ICAO of destination')
-	@args.operation(name='points', nargs='*', help='waypoint ...')
 	def update(self, name, origin, destination, points=[]):
 		'''
 		update an existing route
@@ -243,10 +399,26 @@ class Routes(Haversine):
 		'''
 		delete an existing route
 		'''
-		pass #todo
+		
+		url=f'{self.hostname}/webapi/routes/delete/{name}'
+		if self.verbose:
+			sys.stdout.write(f'url={url}\n')
+			
+		response = requests.post(
+			url,
+			auth=(self.username, self.password),
+			verify=not self.insecure
+		)
+		
+		if response.status_code == 200:
+			if self.verbose:
+				json.dump(response.json(), sys.stdout,  indent='\t')
+			return response.json()
+		
+		sys.stderr.write(f'{response}\n{response.text}\n')
+		return		
 		
 
 #________________________________________________________________________________________________
 if __name__ == '__main__': 
 	json.dump(args.execute(), sys.stdout, indent='\t')
-
