@@ -43,6 +43,10 @@ class Haversine(object):
 #________________________________________________________________________________________________
 @args.command(name='waypoints')
 class Waypoints(Haversine):
+	'''
+	wrapper around the most excellent REST API for waypoints by joao @ haversine
+	https://haversine.com/webapi	
+	'''
 
 	#____________________________________________________________________________________________
 	@args.operation
@@ -76,7 +80,7 @@ class Waypoints(Haversine):
 	@args.parameter(name='id', help='The point ID, max 7 chars')
 	def get(self, id):
 		'''
-		get a single waypoint by id, todo
+		get a single waypoint by id
 		'''
 		
 		waypoints = dict(map(lambda x: (x['id'], x), self.list()))
@@ -202,7 +206,11 @@ class Waypoints(Haversine):
 #________________________________________________________________________________________________
 @args.command(name='routes')
 class Routes(Haversine):
-
+	'''
+	wrapper around the most excellent REST API for routes by joao @ haversine
+	https://haversine.com/webapi
+	'''
+	
 	#____________________________________________________________________________________________
 	@args.operation
 	def list(self):
@@ -387,7 +395,7 @@ class Routes(Haversine):
 	@args.operation
 	def update(self, name, origin, destination, points=[]):
 		'''
-		update an existing route
+		update an existing route, I'm doing it now Sybil
 		'''
 		pass #todo
 			
