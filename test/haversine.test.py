@@ -23,7 +23,7 @@ class WaypointTest(unittest.TestCase):
 	def setUp(self):
 		self.waypoints = Waypoints()
 		#self.waypoints.verbose = True
-		self.waypoints.insecure = True
+		#self.waypoints.insecure = True
 		#self.waypoints.username = 'eddo888'
 		#self.waypoints.password = open('.password').read()
 		
@@ -129,7 +129,7 @@ class RoutesTest(unittest.TestCase):
 	def setUp(self):
 		self.routes = Routes()
 		#self.routes.verbose = True
-		self.routes.insecure = True
+		#self.routes.insecure = True
 		#self.routes.username = 'eddo888'
 		#self.routes.password = open('.password').read()
 		self.name=f'{self.origin}-{self.destination}'
