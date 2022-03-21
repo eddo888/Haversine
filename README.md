@@ -42,7 +42,7 @@ if you like jupyter notebook, you can see some python examples of how to get rou
 [HaversineAPI.ipynb](HaversineAPI.ipynb)
 
 there is also a Flight Plan converter that will read an x-plane FMS file and upload it to navigraph, great for batch uploads.
-[Flight Plans.ipynb](Flight Plans.ipynb)
+[Flight Plans.ipynb](Flight+Plans.ipynb)
 
 ___
 
