@@ -40,11 +40,11 @@ ___
 
 if you like jupyter notebook, you can see some python examples of how to get routes and waypoints
 
-[HaversineAPI.ipynb](HaversineAPI.ipynb)
+[HaversineAPI.ipynb](https://github.com/eddo888/HaversineAPI/blob/main/HaversineAPI.ipynb)
 
 there is also a Flight Plan converter that will read an x-plane FMS file and upload it to navigraph, great for batch uploads.
 
-[Flight Plans.ipynb](Flight%20Plans.ipynb)
+[Flight Plans.ipynb](https://github.com/eddo888/HaversineAPI/blob/main/Flight%20Plans.ipynb)
 
 ___
 
