@@ -14,7 +14,6 @@ from Argumental.Argue import Argue # decorator for command line calling using ar
 squirrel = Squirrel()
 args = Argue() 
 
-
 #________________________________________________________________________________________________
 @args.command()
 class Haversine(object):
@@ -41,6 +40,7 @@ class Haversine(object):
 	
 	
 #________________________________________________________________________________________________
+
 @args.command(name='waypoints')
 class Waypoints(Haversine):
 	'''
@@ -76,6 +76,7 @@ class Waypoints(Haversine):
 		
 
 	#____________________________________________________________________________________________
+
 	@args.operation
 	@args.parameter(name='id', help='The point ID, max 7 chars')
 	def get(self, id):
@@ -92,6 +93,7 @@ class Waypoints(Haversine):
 		
 
 	#____________________________________________________________________________________________
+	
 	@args.operation
 	@args.parameter(name='id', help='The point ID, max 7 chars')
 	@args.parameter(name='description', help='The point description, max 63 chars')
@@ -133,6 +135,7 @@ class Waypoints(Haversine):
 
 
 	#____________________________________________________________________________________________
+	
 	@args.operation
 	@args.parameter(name='id', help='The point ID, max 7 chars')
 	@args.parameter(name='description', help='The point description, max 63 chars')
@@ -175,6 +178,7 @@ class Waypoints(Haversine):
 
 
 	#____________________________________________________________________________________________
+	
 	@args.operation
 	@args.parameter(name='id', help='The point ID, max 7 chars')		
 	def delete(self, id):
@@ -204,6 +208,7 @@ class Waypoints(Haversine):
 
 	
 #________________________________________________________________________________________________
+
 @args.command(name='routes')
 class Routes(Haversine):
 	'''
@@ -239,6 +244,7 @@ class Routes(Haversine):
 
 
 	#____________________________________________________________________________________________
+
 	@args.operation
 	@args.parameter(name='name', help='The route name to recover')
 	def get(self, name):
@@ -254,6 +260,7 @@ class Routes(Haversine):
 		
 
 	#____________________________________________________________________________________________
+	
 	@args.operation
 	@args.parameter(name='origin', help='ICAO of origin')
 	@args.parameter(name='destination', help='ICAO of destination')
@@ -311,7 +318,6 @@ class Routes(Haversine):
 		sys.stderr.write(f'{response}\n{response.text}\n')
 		return
 
-	
 	@args.operation
 	def sample(self):
 		'''
@@ -356,6 +362,7 @@ class Routes(Haversine):
 
 
 	#____________________________________________________________________________________________
+
 	@args.operation
 	@args.parameter(name='route', short='r', help='file with json route, or None for stdin')
 	def create(self, route=None):
@@ -392,6 +399,7 @@ class Routes(Haversine):
 		return
 				
 	#____________________________________________________________________________________________
+	
 	@args.operation
 	def update(self, name, origin, destination, points=[]):
 		'''
@@ -401,6 +409,7 @@ class Routes(Haversine):
 			
 	
 	#____________________________________________________________________________________________
+
 	@args.operation
 	@args.parameter(name='origin', help='ICAO of origin')
 	def delete(self, name):
@@ -428,5 +437,6 @@ class Routes(Haversine):
 		
 
 #________________________________________________________________________________________________
+
 if __name__ == '__main__': 
 	json.dump(args.execute(), sys.stdout, indent='\t')

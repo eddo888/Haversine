@@ -3,3 +3,4 @@ dist
 .ipynb_checkpoints/
 YSSY-YMML.json
 .project
+.pydevproject

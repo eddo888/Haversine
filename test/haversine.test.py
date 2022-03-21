@@ -8,6 +8,7 @@ from datetime import datetime
 
 from Haversine.haversine import Waypoints, Routes, args
 
+#________________________________________________________________________________________________
 class WaypointTest(unittest.TestCase):
 	'''
 	args.parse(['waypoints', '-vi', 'list'])
@@ -33,7 +34,6 @@ class WaypointTest(unittest.TestCase):
 		gc.collect()
 
 	
-	#____________________________________________________________________________________________
 	def test_01_waypoint_create_and_get(self):
 		'''
 		remove any existing waypoint before starting the test
@@ -45,7 +45,6 @@ class WaypointTest(unittest.TestCase):
 			time.sleep(5)
 
 
-	#____________________________________________________________________________________________
 	def test_02_waypoint_create_and_get(self):
 		'''
 		create a new waypoint and confirm it can be retrieved with the list
@@ -106,8 +105,8 @@ class WaypointTest(unittest.TestCase):
 		waypoint = self.waypoints.get(self.id)
 		
 		assert waypoint == None
-		
-				
+
+
 #________________________________________________________________________________________________
 class RoutesTest(unittest.TestCase):
 	'''
@@ -183,10 +182,7 @@ class RoutesTest(unittest.TestCase):
 		waypoints = result['route']['points']
 		assert waypoints[0]['id'] == self.origin
 		assert waypoints[-1]['id'] == self.destination
-		
-		#for index, waypoint in enumerate(waypoints[1:-1]):
-		#	print(index,waypoint)
-		
+				
 		
 	def test_03_update_route(self):
 		pass
