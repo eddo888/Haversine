@@ -1,6 +1,5 @@
 dist
 *.egg-info
 .ipynb_checkpoints/
-YSSY-YMML.json
 .project
 .pydevproject
