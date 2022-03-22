@@ -8,10 +8,8 @@ import os, re, sys, json, requests
 
 from dotmap import DotMap
 
-from Spanners.Squirrel import Squirrel  # uses credstash, use your favourite password safe instead if you like
 from Argumental.Argue import Argue # decorator for command line calling using argparse and argcomplete, cf $ ./haversine.py -h
 
-squirrel = Squirrel()
 args = Argue() 
 
 #________________________________________________________________________________________________
@@ -25,12 +23,11 @@ class Haversine(object):
 	@args.property(default='https://haversine.com')
 	def hostname(self): return
 	
-	@args.property(default='eddo888')
+	@args.property(required=True, short='u', help='username at haversine.com')
 	def username(self): return
 	
-	@args.property(help='obtained from credstash, AWS dynamodb and crypto keys')
-	def password(self):
-		return squirrel.get(f'{self.username}@{self.hostname}')
+	@args.property(required=True, short='p', help='password at haversine.com')
+	def password(self): return
 
 	@args.property(flag=True, short='v', help='display verbose output')
 	def verbose(self): return
