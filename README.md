@@ -18,14 +18,10 @@ usage: haversine.py [-h] {Haversine,waypoints,routes,args} ...
 positional arguments:
   {Haversine,waypoints,routes,args}
                         commands
-    Haversine           wrapper around the most excellent REST API for
-                        waypoints by joao @ haversine
+    Haversine           wrapper around the most excellent REST API by joao @ haversine
                         https://haversine.com/webapi
-    waypoints           wrapper around the most excellent REST API for
-                        waypoints by joao @ haversine
-                        https://haversine.com/webapi
-    routes              wrapper around the most excellent REST API for routes
-                        by joao @ haversine https://haversine.com/webapi
+    waypoints           REST API for waypoints
+    routes              REST API for routes
     args                print the values for the args
 
 optional arguments:
@@ -94,6 +90,19 @@ optional arguments:
   -h, --help            show this help message and exit
   -e ELEVATION, --elevation ELEVATION
                         EEEE.EEEE in feet, type=float
+```
+
+## example
+
+```
+$ haversine.py waypoints -u eddo888 -p $(cat ../test/.password) create 0EDDO 'Daves Waypoint' 1 -1
+{
+        "id": "0EDDO",
+        "description": "Daves Waypoint",
+        "latitude": 1.0,
+        "longitude": -1.0,
+        "elevation": 0.0
+}
 ```
 
 ## update
@@ -175,30 +184,32 @@ ___
 ```
 $ haversine.py routes -h
 
-usage: haversine.py routes [-h] [--hostname HOSTNAME] [-i]
-                           [--password PASSWORD] [--username USERNAME] [-v]
-                           {create,delete,get,list,sample,suggest,update} ...
+usage: haversine.py routes [-h] [--hostname HOSTNAME] [-i] -p
+                           PASSWORD -u USERNAME [-v]
+                           {create,delete,get,list,sample,suggest,update}
+                           ...
+
+REST API for routes
 
 positional arguments:
   {create,delete,get,list,sample,suggest,update}
                         operations
-    create              create a new route, format as follows;
+    create              create a new route from a file, dict or path
     delete              delete an existing route
-    get                 get a single route by name, reads whole list and
-                        filters
+    get                 get a single route by name, reads whole list and filters
     list                get routes, bit broken at the moment
-    sample              provide a sample route to be populated and used to
-                        create/update a route
+    sample              provide a sample route to be populated and used to create/update a route
     suggest             find a route from the origin to the destination
-    update              update an existing route, I'm doing it now Sybil
+    update              update a route from a file, dict or path
 
 optional arguments:
   -h, --help            show this help message and exit
   --hostname HOSTNAME   default=https://haversine.com
-  -i, --insecure        use insecure mode for old clients with old cert trees,
-                        will remove later, developing on Pythonista
-  --password PASSWORD   obtained from credstash, AWS dynamodb and crypto keys
-  --username USERNAME   default=eddo888
+  -i, --insecure        use insecure mode for old clients with old cert trees, will remove later, developing on Pythonista
+  -p PASSWORD, --password PASSWORD
+                        password at haversine.com
+  -u USERNAME, --username USERNAME
+                        username at haversine.com
   -v, --verbose         display verbose output
 ```
 
@@ -265,37 +276,106 @@ optional arguments:
 
 ```
 
+### example
+
+```
+$ haversine.py routes -u eddo888 -p $(cat ../test/.password) suggest -f YSSY YMML
+{
+        "name": "YSSY-YMML",
+        "origin": "YSSY",
+        "destination": "YMML",
+        "path": "WOL H65 RAZZI Q29 LIZZI",
+        "length": 0
+}
+```
+
+
 ## create
 
 ```
 $ haversine.py routes create -h
 
-usage: haversine.py routes create [-h] [-r ROUTE]
+usage: haversine.py routes create [-h] [-i INPUT] [-r ROUTE]
+                                  [-p PATH]
+
+create a new route from a file, dict or path
 
 optional arguments:
   -h, --help            show this help message and exit
-  -r ROUTE, --route ROUTE
+  -i INPUT, --input INPUT
                         file with json route, or None for stdin
-                        
+  -r ROUTE, --route ROUTE
+                        dict or json as text route
+  -p PATH, --path PATH  text based route including origin and destination
+						
 ```
 
+### example
+
+```
+$ haversine.py routes -u eddo888 -p $(cat ../test/.password) create -p 'YSSY WOL YMML' 
+{
+        "result": "success",
+        "status_code": 200,
+        "description": "route added successfully",
+        "route": {
+                "name": "YSSY-YMML",
+                "origin": "YSSY",
+                "destination": "YMML",
+                "departure_runway": null,
+                "sid": null,
+                "path": "WOL",
+                "star": null,
+                "approach": null,
+                "arrival_runway": null,
+                "length": 385.13322995229703,
+                "flight_level": null,
+                "climb_descent_tas": null,
+                "vertical_speed_fpm": null,
+                "points": [
+                        {
+                                "id": "YSSY",
+                                "type": "APT",
+                                "latitude": -33.946,
+                                "longitude": 151.17711111,
+                                "elevation": 21.0
+                        },
+                        {
+                                "id": "WOL",
+                                "type": "NDB",
+                                "latitude": -34.55793056,
+                                "longitude": 150.79099167,
+                                "elevation": null
+                        },
+                        {
+                                "id": "YMML",
+                                "type": "APT",
+                                "latitude": -37.67333333,
+                                "longitude": 144.84333333,
+                                "elevation": 434.0
+                        }
+                ]
+        }
+```
+		
 ## update
-work in progress
 
 ```
 $ haversine.py routes update -h
 
-usage: haversine.py routes update [-h] [--points POINTS]
-                                  name origin destination
+usage: haversine.py routes update [-h] [-i INPUT] [-r ROUTE]
+                                  [-p PATH]
 
-positional arguments:
-  name
-  origin
-  destination
+update a route from a file, dict or path
 
 optional arguments:
-  -h, --help       show this help message and exit
-  --points POINTS
+  -h, --help            show this help message and exit
+  -i INPUT, --input INPUT
+                        file with json route, or None for stdin
+  -r ROUTE, --route ROUTE
+                        dict or json as text route
+  -p PATH, --path PATH  text based route including origin and destination
+
 ```
 
 ## list

@@ -16,7 +16,7 @@ args = Argue()
 @args.command()
 class Haversine(object):
 	'''
-	wrapper around the most excellent REST API for waypoints by joao @ haversine
+	wrapper around the most excellent REST API by joao @ haversine
 	https://haversine.com/webapi
 	'''
 	
@@ -41,8 +41,7 @@ class Haversine(object):
 @args.command(name='waypoints')
 class Waypoints(Haversine):
 	'''
-	wrapper around the most excellent REST API for waypoints by joao @ haversine
-	https://haversine.com/webapi	
+	REST API for waypoints
 	'''
 
 	#____________________________________________________________________________________________
@@ -209,8 +208,7 @@ class Waypoints(Haversine):
 @args.command(name='routes')
 class Routes(Haversine):
 	'''
-	wrapper around the most excellent REST API for routes by joao @ haversine
-	https://haversine.com/webapi
+	REST API for routes
 	'''
 	
 	#____________________________________________________________________________________________
