@@ -306,7 +306,8 @@ class Routes(Haversine):
 				}
 				
 			if output:
-				sys.stdout.write(f'output={output}\n')
+				if self.verbose:
+					print('output',output)
 				with open(os.path.expanduser(output),'w') as _output:
 					json.dump(result, _output, indent='\t')
 													
@@ -359,22 +360,38 @@ class Routes(Haversine):
 
 
 	#____________________________________________________________________________________________
-
-	@args.operation
-	@args.parameter(name='route', short='r', help='file with json route, or None for stdin')
-	def create(self, route=None):
+	def _create_or_update(self, input=None, route=None, path=None, update=False):
 		'''
-		create a new route, format as follows;
+		create or update a new route
 		'''
+		if route:
+			if route is dict:
+				request = route
+			else:
+				request = json.loads(route)
+		elif path:
+			parts = path.split(' ')
+			parts = list(filter(lambda x: x.lower() != 'dct', parts))
+			#print(parts)
+			request=dict(
+				name=f'{parts[0]}-{parts[-1]}',
+				origin=parts[0],
+				destination=parts[-1],
+				path=' '.join(parts[1:-1]),
+			)
+			#print(request)
+		else:
+			_input = sys.stdin
+			if input and os.path.exists(os.path.expanduser(input)): 
+				_input = open(os.path.expanduser(input))
+			request = json.load(_input)
+			if input != sys.stdin:
+				_input.close()
 
-		input = sys.stdin
-		if route and os.path.exists(os.path.expanduser(route)): 
-			input = open(os.path.expanduser(route))
-		request = json.load(input)
-		if input != sys.stdin:
-			input.close()
-								
-		url=f'{self.hostname}/webapi/routes/new/{request["name"]}'
+		if update:
+			url=f'{self.hostname}/webapi/routes/update/{request["name"]}'
+		else:
+			url=f'{self.hostname}/webapi/routes/new/{request["name"]}'
 		
 		if self.verbose:
 			sys.stdout.write(f'url={url}\nroute=')
@@ -396,13 +413,27 @@ class Routes(Haversine):
 		return
 				
 	#____________________________________________________________________________________________
-	
 	@args.operation
-	def update(self, name, origin, destination, points=[]):
+	@args.parameter(name='input', short='i', help='file with json route, or None for stdin')
+	@args.parameter(name='route', short='r', help='dict or json as text route')
+	@args.parameter(name='path', short='p', help='text based route including origin and destination')
+	def create(self, input=None, route=None, path=None):
 		'''
-		update an existing route, I'm doing it now Sybil
+		create a new route from a file, dict or path
 		'''
-		pass #todo
+		return self._create_or_update(input=input, route=route, path=path, update=False)
+
+	
+	#____________________________________________________________________________________________
+	@args.operation
+	@args.parameter(name='input', short='i', help='file with json route, or None for stdin')
+	@args.parameter(name='route', short='r', help='dict or json as text route')
+	@args.parameter(name='path', short='p', help='text based route including origin and destination')
+	def update(self, input=None, route=None, path=None):
+		'''
+		update a route from a file, dict or path
+		'''
+		return self._create_or_update(input=input, route=route, path=path, update=True)
 			
 	
 	#____________________________________________________________________________________________
