@@ -82,7 +82,7 @@ class Waypoints(Haversine):
 			bytes = output.getvalue()
 
 		result = json.loads(bytes.decode('UTF-8'))
-		print(f"{result['result']=}")
+		#print(f"{result['result']=}")
 
 		if response.status_code == 200:
 			if self.verbose:
