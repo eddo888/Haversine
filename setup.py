@@ -25,7 +25,7 @@ setup(
 	],
 	install_requires=[
 		'dotmap',
-		'tqdm'
+		'tqdm',
 		'pygeohash',
 		'Baubles',
 		'Perdy',
