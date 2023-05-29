@@ -5,10 +5,11 @@
 # pip3 install boto credstash Spanners Argumental
 
 import os, re, sys, json, requests
-
+import pygeohash as pgh
+from io import BytesIO
+from tqdm import tqdm
 from dotmap import DotMap
-
-from Argumental.Argue import Argue # decorator for command line calling using argparse and argcomplete, cf $ ./haversine.py -h
+from Argumental.Argue import Argue
 
 args = Argue() 
 
@@ -59,14 +60,36 @@ class Waypoints(Haversine):
 		response = requests.get(
 			url, 
 			auth=(self.username, self.password), 
-			verify=not self.insecure
+			verify=not self.insecure,
+			stream=True,
 		)
 		
+		length = int(response.headers.get('content-length', 0))
+		chunk_size=1024
+
+		with BytesIO() as output, tqdm(
+			desc=url.split('/')[-1], 
+			total=length, 
+			unit='iB', 
+			unit_scale=True, 
+			unit_divisor=chunk_size,
+		) as bar:
+			for data in response.iter_content(
+				chunk_size=chunk_size
+			):
+				size = output.write(data)
+				bar.update(size)	
+			bytes = output.getvalue()
+
+		result = json.loads(bytes.decode('UTF-8'))
+		print(f"{result['result']=}")
+
 		if response.status_code == 200:
 			if self.verbose:
-				json.dump(response.json(), sys.stdout,  indent='\t')
-			return response.json()['waypoints']
-		
+				json.dump(result, sys.stdout,  indent='\t')
+			return result['waypoints']
+
+		# assume it failed at this point
 		sys.stderr.write(f'{response}\n{response.text}\n')
 		return
 		
