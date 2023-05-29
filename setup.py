@@ -8,7 +8,7 @@ pwd = path.abspath(path.dirname(__file__))
 with codecs.open(path.join(pwd, 'README.md'), 'r', encoding='utf8') as input:
     long_description = input.read()
 
-version='1.14'
+version='1.15'
 	
 setup(
 	name='HaversineAPI',
@@ -26,7 +26,7 @@ setup(
 	install_requires=[
 		'dotmap',
 		'tqdm'
-		'pygeohash',,
+		'pygeohash',
 		'Baubles',
 		'Perdy',
 		'Argumental',
